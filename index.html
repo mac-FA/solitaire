@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#0f3d2e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Solitaire — Karten & Geduld</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-theme="dark">
+  <div id="app">
+
+    <!-- Menü -->
+    <section id="menu" class="screen menu">
+      <header class="menu-header">
+        <h1>Solitaire</h1>
+        <p class="subtitle">Vier klassische Varianten — ruhig und konzentriert.</p>
+      </header>
+
+      <div class="variants">
+        <button class="variant-card" data-variant="klondike">
+          <div class="variant-art" aria-hidden="true">
+            <span class="mini-card mc-1">♠</span>
+            <span class="mini-card mc-2">♥</span>
+            <span class="mini-card mc-3">♣</span>
+          </div>
+          <h2>Klondike</h2>
+          <p>Der Klassiker. Sieben Spalten, vier Fundamente.</p>
+        </button>
+
+        <button class="variant-card" data-variant="spider">
+          <div class="variant-art" aria-hidden="true">
+            <span class="mini-card mc-1">♠</span>
+            <span class="mini-card mc-2">♠</span>
+            <span class="mini-card mc-3">♠</span>
+          </div>
+          <h2>Spider</h2>
+          <p>Zehn Spalten. Vollständige Sequenzen sammeln.</p>
+        </button>
+
+        <button class="variant-card" data-variant="freecell">
+          <div class="variant-art" aria-hidden="true">
+            <span class="mini-card mc-1">♦</span>
+            <span class="mini-card mc-2">♣</span>
+            <span class="mini-card mc-3">♥</span>
+          </div>
+          <h2>FreeCell</h2>
+          <p>Alle Karten offen. Vier Freizellen helfen.</p>
+        </button>
+
+        <button class="variant-card" data-variant="pyramid">
+          <div class="variant-art" aria-hidden="true">
+            <span class="mini-card mc-1">♥</span>
+            <span class="mini-card mc-2">♦</span>
+            <span class="mini-card mc-3">♥</span>
+          </div>
+          <h2>Pyramide</h2>
+          <p>Karten paaren, die zusammen 13 ergeben.</p>
+        </button>
+      </div>
+
+      <div class="menu-actions">
+        <button id="btn-theme" class="ghost" type="button" aria-label="Hell/Dunkel umschalten">
+          <span class="icon-sun">☀</span><span class="icon-moon">☾</span>
+          <span class="label">Dunkel</span>
+        </button>
+        <button id="btn-fullscreen" class="ghost" type="button">⛶ Vollbild</button>
+      </div>
+    </section>
+
+    <!-- Spielbildschirm -->
+    <section id="game" class="screen game hidden" aria-hidden="true">
+      <header class="game-bar">
+        <button id="btn-back" class="bar-btn" type="button" aria-label="Zurück zum Menü">‹ Menü</button>
+        <div class="bar-title">
+          <span id="game-title">Klondike</span>
+          <span id="game-sub" class="sub"></span>
+        </div>
+        <div class="bar-stats">
+          <span class="stat"><span class="label">Züge</span><span id="stat-moves">0</span></span>
+          <span class="stat"><span class="label">Zeit</span><span id="stat-time">0:00</span></span>
+        </div>
+        <div class="bar-actions">
+          <button id="btn-undo" class="bar-btn" type="button" aria-label="Zug zurücknehmen">↶ Zurück</button>
+          <button id="btn-new" class="bar-btn" type="button" aria-label="Neues Spiel">↻ Neu</button>
+          <button id="btn-theme2" class="bar-btn" type="button" aria-label="Hell/Dunkel">☾</button>
+          <button id="btn-fs2" class="bar-btn" type="button" aria-label="Vollbild">⛶</button>
+        </div>
+      </header>
+      <div id="board" class="board"></div>
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    </section>
+
+    <!-- Sieg-Overlay -->
+    <div id="win-overlay" class="win-overlay hidden" aria-hidden="true">
+      <div class="win-card">
+        <h2>Geschafft!</h2>
+        <p id="win-text">Sehr schön gespielt.</p>
+        <div class="win-actions">
+          <button id="btn-win-new" type="button" class="primary">Neues Spiel</button>
+          <button id="btn-win-menu" type="button" class="ghost">Menü</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variant-Optionen Dialog -->
+    <div id="opts-overlay" class="opts-overlay hidden" aria-hidden="true">
+      <div class="opts-card">
+        <h2 id="opts-title">Optionen</h2>
+        <div id="opts-body"></div>
+        <div class="opts-actions">
+          <button id="btn-opts-cancel" type="button" class="ghost">Abbrechen</button>
+          <button id="btn-opts-start" type="button" class="primary">Starten</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="cards.js"></script>
+  <script src="klondike.js"></script>
+  <script src="spider.js"></script>
+  <script src="freecell.js"></script>
+  <script src="pyramid.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+    }
+  </script>
+</body>
+</html>

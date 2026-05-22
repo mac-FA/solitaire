@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#0f3d2e"/>
+  <g transform="translate(256 256)">
+    <g transform="translate(-110 -40) rotate(-12)">
+      <rect x="-70" y="-100" width="140" height="200" rx="14" fill="#f4ede0" stroke="#1a1a1a" stroke-width="3"/>
+      <text x="-50" y="-50" font-family="Georgia, serif" font-size="48" fill="#1a1a1a" text-anchor="middle">A</text>
+      <text x="-50" y="-15" font-family="Georgia, serif" font-size="40" fill="#1a1a1a" text-anchor="middle">♠</text>
+      <text x="0" y="40" font-family="Georgia, serif" font-size="110" fill="#1a1a1a" text-anchor="middle">♠</text>
+    </g>
+    <g transform="translate(20 -10) rotate(8)">
+      <rect x="-70" y="-100" width="140" height="200" rx="14" fill="#f4ede0" stroke="#1a1a1a" stroke-width="3"/>
+      <text x="-50" y="-50" font-family="Georgia, serif" font-size="48" fill="#c0392b" text-anchor="middle">K</text>
+      <text x="-50" y="-15" font-family="Georgia, serif" font-size="40" fill="#c0392b" text-anchor="middle">♥</text>
+      <text x="0" y="40" font-family="Georgia, serif" font-size="110" fill="#c0392b" text-anchor="middle">♥</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,20 @@
+{
+  "name": "Solitaire — Karten & Geduld",
+  "short_name": "Solitaire",
+  "description": "Vier klassische Solitaire-Varianten: Klondike, Spider, FreeCell und Pyramide.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f3d2e",
+  "theme_color": "#0f3d2e",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
