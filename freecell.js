@@ -25,6 +25,28 @@
     title() { return 'FreeCell'; }
     subtitle() { return '4 Freizellen'; }
 
+    rules() { return `
+      <h3>Ziel</h3>
+      <p>Bringe alle 52 Karten geordnet auf die vier Fundamente — pro Farbe von Ass bis König.</p>
+      <h3>Tableau (die 8 Spalten)</h3>
+      <ul>
+        <li>Alle Karten liegen von Beginn an offen.</li>
+        <li>Karten werden <b>absteigend</b> und in <b>abwechselnden Farben</b> gestapelt.</li>
+        <li>Auf ein leeres Feld darf jede Karte.</li>
+      </ul>
+      <h3>Freizellen (oben links)</h3>
+      <ul>
+        <li>Jede der vier Zellen kann <b>genau eine</b> Karte zwischenspeichern.</li>
+        <li>Eine Karte aus einer Zelle kann jederzeit wieder ins Spiel.</li>
+      </ul>
+      <h3>Mehrere Karten verschieben</h3>
+      <p>Beim Verschieben mehrerer Karten muss die Folge zueinander passen (absteigend, alternierend). Die maximal mögliche Anzahl ergibt sich aus <b>(leere Zellen + 1) × 2<sup>leere Spalten</sup></b>.</p>
+      <h3>Tipps</h3>
+      <ul>
+        <li>Eine Karte <b>antippen</b> schickt sie aufs Fundament oder in eine freie Zelle.</li>
+        <li>Fast jedes Spiel ist lösbar — Geduld lohnt sich.</li>
+      </ul>`; }
+
     setup(boardEl) {
       this.board = boardEl;
       boardEl.innerHTML = '';
@@ -131,9 +153,13 @@
         let y = top2;
         for (let i = 0; i < pile.length; i++) {
           Cards.placeCard(pile[i], x, y, i + 1, animate);
+          pile[i].el.classList.toggle('covered', i < pile.length - 1);
           y += m.fanDown;
         }
       }
+      // Freizellen + Fundamente: nie covered
+      for (const c of this.cells) if (c) c.el.classList.remove('covered');
+      for (const f of this.foundation) for (const c of f) c.el.classList.remove('covered');
 
       // Höhe
       let maxBottom = top2 + m.h;

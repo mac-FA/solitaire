@@ -38,6 +38,26 @@
     title()    { return 'Klondike'; }
     subtitle() { return this.draw === 3 ? 'Draw 3' : 'Draw 1'; }
 
+    rules() { return `
+      <h3>Ziel</h3>
+      <p>Bringe alle 52 Karten geordnet auf die vier Fundamente — pro Farbe von Ass bis König.</p>
+      <h3>Tableau (die 7 Spalten)</h3>
+      <ul>
+        <li>Karten werden <b>absteigend</b> und in <b>abwechselnden Farben</b> gestapelt (z. B. schwarze 7 auf rote 8).</li>
+        <li>Nur ein <b>König</b> darf auf ein leeres Feld gelegt werden.</li>
+        <li>Eine geordnete Folge kann komplett umgesetzt werden.</li>
+      </ul>
+      <h3>Stock &amp; Waste</h3>
+      <ul>
+        <li>Klick auf den Stock zieht eine (oder drei) Karte(n) auf das Waste.</li>
+        <li>Ist der Stock leer, kann er beliebig oft neu durchblättert werden.</li>
+      </ul>
+      <h3>Tipps</h3>
+      <ul>
+        <li>Eine Karte <b>antippen</b> schickt sie automatisch aufs Fundament, falls möglich.</li>
+        <li>Eigene Züge mit <kbd>U</kbd>/<kbd>Z</kbd> zurücknehmen, <kbd>N</kbd> startet ein neues Spiel.</li>
+      </ul>`; }
+
     setup(boardEl) {
       this.board = boardEl;
       boardEl.innerHTML = '';
@@ -162,13 +182,18 @@
         let y = top2;
         for (let i = 0; i < pile.length; i++) {
           const c = pile[i];
-          if (c.faceUp !== !!c.faceUp /*noop*/);
           Cards.placeCard(c, x, y, i + 1, animate);
           // Sicherstellen, dass face-up Status visuell stimmt
           if (c.faceUp && c.el.classList.contains('face-down')) Cards.setFaceUp(c, true);
           if (!c.faceUp && !c.el.classList.contains('face-down')) Cards.setFaceUp(c, false);
+          // Symbol-Slide: alle Karten außer der obersten in der Spalte
+          c.el.classList.toggle('covered', c.faceUp && i < pile.length - 1);
           y += c.faceUp ? m.fanDown : m.fanDownTight;
         }
+      }
+      // Stock/Waste/Foundation top-Karte = nie covered
+      for (const c of [...this.stock, ...this.waste, ...this.foundation.flat()]) {
+        c.el.classList.remove('covered');
       }
 
       // Board-Größe anpassen

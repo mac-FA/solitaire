@@ -88,6 +88,7 @@
         <div class="bar-actions">
           <button id="btn-undo" class="bar-btn" type="button" aria-label="Zug zurücknehmen">↶ Zurück</button>
           <button id="btn-new" class="bar-btn" type="button" aria-label="Neues Spiel">↻ Neu</button>
+          <button id="btn-rules" class="bar-btn" type="button" aria-label="Regeln anzeigen">? Regeln</button>
           <button id="btn-theme2" class="bar-btn" type="button" aria-label="Hell/Dunkel">☾</button>
           <button id="btn-fs2" class="bar-btn" type="button" aria-label="Vollbild">⛶</button>
         </div>
@@ -104,6 +105,17 @@
         <div class="win-actions">
           <button id="btn-win-new" type="button" class="primary">Neues Spiel</button>
           <button id="btn-win-menu" type="button" class="ghost">Menü</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Regel-Overlay -->
+    <div id="rules-overlay" class="rules-overlay hidden" aria-hidden="true">
+      <div class="rules-card">
+        <h2 id="rules-title">Regeln</h2>
+        <div id="rules-body" class="rules-body"></div>
+        <div class="rules-actions">
+          <button id="btn-rules-close" type="button" class="primary">Verstanden</button>
         </div>
       </div>
     </div>

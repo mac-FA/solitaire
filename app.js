@@ -180,6 +180,22 @@
   // Spiel-Bar
   document.getElementById('btn-back').addEventListener('click', backToMenu);
   document.getElementById('btn-undo').addEventListener('click', () => { game && game.doUndo && game.doUndo(); });
+  document.getElementById('btn-rules').addEventListener('click', () => {
+    if (!game || !game.rules) return;
+    document.getElementById('rules-title').textContent = game.title() + ' — Regeln';
+    document.getElementById('rules-body').innerHTML = game.rules();
+    const ov = document.getElementById('rules-overlay');
+    ov.classList.remove('hidden');
+    ov.setAttribute('aria-hidden', 'false');
+  });
+  document.getElementById('btn-rules-close').addEventListener('click', () => {
+    const ov = document.getElementById('rules-overlay');
+    ov.classList.add('hidden');
+    ov.setAttribute('aria-hidden', 'true');
+  });
+  document.getElementById('rules-overlay').addEventListener('click', (e) => {
+    if (e.target.id === 'rules-overlay') document.getElementById('btn-rules-close').click();
+  });
   document.getElementById('btn-new').addEventListener('click', () => {
     if (!game) return;
     const variant = (game instanceof window.Klondike) ? 'klondike'
@@ -218,6 +234,8 @@
       document.getElementById('btn-new').click();
     } else if (e.key === 'f' || e.key === 'F') {
       toggleFullscreen();
+    } else if (e.key === '?' || e.key === 'h' || e.key === 'H') {
+      document.getElementById('btn-rules').click();
     }
   });
 

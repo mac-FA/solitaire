@@ -37,6 +37,27 @@
     title() { return 'Spider'; }
     subtitle() { return this.suits + (this.suits === 1 ? ' Farbe' : ' Farben'); }
 
+    rules() { return `
+      <h3>Ziel</h3>
+      <p>Sammle <b>acht vollständige Sequenzen</b> (König bis Ass in einer Farbe). Jede fertige Sequenz verschwindet automatisch vom Spielfeld.</p>
+      <h3>Tableau</h3>
+      <ul>
+        <li>Karten werden <b>absteigend</b> gestapelt — beim Ablegen ist die Farbe egal.</li>
+        <li><b>Verschoben</b> werden können nur Karten, die eine geschlossene, gleichfarbige Sequenz bilden.</li>
+        <li>Auf ein leeres Feld darf jede Karte oder Sequenz.</li>
+      </ul>
+      <h3>Stock</h3>
+      <ul>
+        <li>Klick auf den Stock teilt eine Karte pro Spalte aus.</li>
+        <li>Voraussetzung: <b>keine Spalte ist leer</b>.</li>
+      </ul>
+      <h3>Schwierigkeit</h3>
+      <ul>
+        <li><b>1 Farbe</b>: einfach — alle Karten sind ♠.</li>
+        <li><b>2 Farben</b>: mittel — ♠ und ♥.</li>
+        <li><b>4 Farben</b>: klassisch und am schwersten.</li>
+      </ul>`; }
+
     setup(boardEl) {
       this.board = boardEl;
       boardEl.innerHTML = '';
@@ -133,6 +154,7 @@
           Cards.placeCard(c, x, y, i + 1, animate);
           if (c.faceUp && c.el.classList.contains('face-down')) Cards.setFaceUp(c, true);
           if (!c.faceUp && !c.el.classList.contains('face-down')) Cards.setFaceUp(c, false);
+          c.el.classList.toggle('covered', c.faceUp && i < pile.length - 1);
           y += c.faceUp ? m.fanDown : m.fanDownTight;
         }
       }

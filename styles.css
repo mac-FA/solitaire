@@ -13,8 +13,12 @@
   --card-border: #1a1a1a;
   --card-shadow: 0 6px 14px rgba(0,0,0,.35), 0 2px 4px rgba(0,0,0,.25);
   --card-shadow-drag: 0 18px 36px rgba(0,0,0,.45), 0 6px 14px rgba(0,0,0,.35);
-  --red: #c0392b;
+  --red: #e8222a;       /* knallig, hoher Kontrast gegen Schwarz auch bei Rot-Grün-Schwäche */
   --black: #1a1a1a;
+  --rank-size: calc(var(--card-w) * 0.24);
+  --suit-size: calc(var(--card-w) * 0.20);
+  --pip-size:  calc(var(--card-w) * 0.52);
+  --corner-pad: calc(var(--card-w) * 0.07);
   --accent: #d6a85a;
   --accent-2: #b88a3b;
   --slot-bg: rgba(255,255,255,.05);
@@ -37,6 +41,7 @@
 }
 
 [data-theme="light"] {
+  --red: #d8121d;       /* dunklerer, satter Rot-Ton fürs helle Filz */
   --bg: #e8dec7;
   --bg-2: #d9cdb0;
   --felt: #2f7a5d;
@@ -349,34 +354,47 @@ button.primary:active, button.ghost:active { transform: translateY(1px); }
 
 .card .corner {
   position: absolute;
-  font-size: 14px;
+  width: calc(var(--rank-size) * 2.2);
+  height: calc(var(--rank-size) * 2);
+  font-size: var(--rank-size);
   line-height: 1;
-  text-align: center;
-  font-weight: 600;
+  font-weight: 700;
 }
-.card .corner.tl { top: 6px; left: 6px; }
-.card .corner.br { bottom: 6px; right: 6px; transform: rotate(180deg); }
-.card .corner .r { display: block; }
-.card .corner .s { display: block; font-size: 12px; margin-top: 1px; }
+.card .corner.tl { top: var(--corner-pad); left: var(--corner-pad); }
+.card .corner.br { bottom: var(--corner-pad); right: var(--corner-pad); transform: rotate(180deg); }
+.card .corner .r {
+  position: absolute;
+  top: 0; left: 0;
+  font-weight: 700;
+}
+.card .corner .s {
+  position: absolute;
+  top: var(--rank-size);
+  left: 0;
+  font-size: var(--suit-size);
+  transition: top 240ms var(--ease), left 240ms var(--ease);
+}
+/* Wenn die Karte von einer weiteren Karte überdeckt ist, rutscht das
+   Symbol nach rechts neben die Zahl, damit beide oben sichtbar bleiben. */
+.card.covered .corner .s {
+  top: 0;
+  left: calc(var(--rank-size) * 1.3);
+}
+.card.no-anim .corner .s { transition: none !important; }
 .card .pip {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 36px;
+  font-size: var(--pip-size);
   pointer-events: none;
+  opacity: .9;
 }
 
 @media (max-width: 520px) {
   :root { --card-w: 58px; --card-h: 82px; --gap: 8px; }
-  .card .corner { font-size: 12px; }
-  .card .corner .s { font-size: 10px; }
-  .card .pip { font-size: 26px; }
 }
 @media (max-width: 380px) {
   :root { --card-w: 48px; --card-h: 68px; --gap: 6px; }
-  .card .corner { font-size: 10px; }
-  .card .corner .s { font-size: 9px; }
-  .card .pip { font-size: 22px; }
 }
 
 /* === Toast === */
@@ -397,7 +415,7 @@ button.primary:active, button.ghost:active { transform: translateY(1px); }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 /* === Overlays === */
-.win-overlay, .opts-overlay {
+.win-overlay, .opts-overlay, .rules-overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,.55);
   display: flex; align-items: center; justify-content: center;
@@ -405,7 +423,7 @@ button.primary:active, button.ghost:active { transform: translateY(1px); }
   animation: fade-in var(--t-med) var(--ease);
   padding: 20px;
 }
-.win-card, .opts-card {
+.win-card, .opts-card, .rules-card {
   background: linear-gradient(180deg, var(--felt), var(--felt-2));
   color: var(--ink);
   border: 1px solid var(--bar-border);
@@ -416,11 +434,47 @@ button.primary:active, button.ghost:active { transform: translateY(1px); }
   text-align: center;
   box-shadow: 0 24px 60px rgba(0,0,0,.45);
 }
-.win-card h2, .opts-card h2 {
+.win-card h2, .opts-card h2, .rules-card h2 {
   margin: 0 0 8px;
   font-family: Georgia, serif;
   font-size: 1.6rem;
 }
+
+/* Regel-Overlay: breiter, scrollbar */
+.rules-card {
+  max-width: 560px;
+  text-align: left;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+.rules-card h2 { text-align: center; }
+.rules-body {
+  overflow: auto;
+  flex: 1;
+  margin: 8px 0 14px;
+  line-height: 1.55;
+  font-size: .98rem;
+}
+.rules-body h3 {
+  margin: 14px 0 6px;
+  font-family: Georgia, serif;
+  font-size: 1.05rem;
+  color: var(--accent);
+}
+.rules-body p, .rules-body ul { margin: 0 0 10px; }
+.rules-body ul { padding-left: 22px; }
+.rules-body li { margin-bottom: 4px; }
+.rules-body kbd {
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: ui-monospace, monospace;
+  font-size: .85em;
+}
+.rules-actions { display: flex; justify-content: center; }
+
 .win-card p { margin: 0 0 18px; color: var(--ink-soft); }
 .win-actions, .opts-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
 

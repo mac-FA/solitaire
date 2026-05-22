@@ -29,6 +29,24 @@
     title() { return 'Pyramide'; }
     subtitle() { return 'Paare = 13'; }
 
+    rules() { return `
+      <h3>Ziel</h3>
+      <p>Entferne alle 28 Karten der Pyramide.</p>
+      <h3>Karten paaren</h3>
+      <ul>
+        <li>Wähle zwei Karten, die zusammen <b>13</b> ergeben — sie verschwinden.</li>
+        <li>Werte: A = 1, J = 11, Q = 12.</li>
+        <li>Ein <b>König (K = 13)</b> wird mit einem einzelnen Klick entfernt.</li>
+        <li>Beispielpaare: A+Q · 2+J · 3+10 · 4+9 · 5+8 · 6+7</li>
+      </ul>
+      <h3>Verfügbarkeit</h3>
+      <p>Eine Karte ist nur <b>auswählbar</b>, wenn keine weitere Karte auf ihr liegt. In der Pyramide werden Karten erst frei, wenn die zwei darunterliegenden bereits entfernt sind.</p>
+      <h3>Stock &amp; Waste</h3>
+      <ul>
+        <li>Klick auf den Stock legt eine Karte aufs Waste — die kann mit jeder verfügbaren Pyramidenkarte gepaart werden.</li>
+        <li>Der Stock darf <b>zweimal</b> erneut durchgegangen werden.</li>
+      </ul>`; }
+
     setup(boardEl) {
       this.board = boardEl;
       boardEl.innerHTML = '';
