@@ -15,10 +15,14 @@
   --card-shadow-drag: 0 18px 36px rgba(0,0,0,.45), 0 6px 14px rgba(0,0,0,.35);
   --red: #e8222a;       /* knallig, hoher Kontrast gegen Schwarz auch bei Rot-Grün-Schwäche */
   --black: #1a1a1a;
-  --rank-size: calc(var(--card-w) * 0.24);
-  --suit-size: calc(var(--card-w) * 0.20);
-  --pip-size:  calc(var(--card-w) * 0.52);
-  --corner-pad: calc(var(--card-w) * 0.07);
+  /* Groß und gut lesbar — wie bei Senioren-Tastentelefonen.
+     Bei überdeckten Karten (Klondike/Spider/FreeCell: sichtbarer
+     Streifen ≈ 0.28*Kartenhöhe ≈ 0.395*Kartenbreite) füllt die Zahl
+     damit ~90 % der sichtbaren Höhe. */
+  --rank-size: calc(var(--card-w) * 0.36);
+  --suit-size: calc(var(--card-w) * 0.32);
+  --pip-size:  calc(var(--card-w) * 0.40);
+  --corner-pad: calc(var(--card-w) * 0.06);
   --accent: #d6a85a;
   --accent-2: #b88a3b;
   --slot-bg: rgba(255,255,255,.05);
@@ -359,6 +363,7 @@ button.primary:active, button.ghost:active { transform: translateY(1px); }
   font-size: var(--rank-size);
   line-height: 1;
   font-weight: 700;
+  z-index: 2;
 }
 .card .corner.tl { top: var(--corner-pad); left: var(--corner-pad); }
 .card .corner.br { bottom: var(--corner-pad); right: var(--corner-pad); transform: rotate(180deg); }
@@ -387,7 +392,10 @@ button.primary:active, button.ghost:active { transform: translateY(1px); }
   transform: translate(-50%, -50%);
   font-size: var(--pip-size);
   pointer-events: none;
-  opacity: .9;
+  /* Wirkt jetzt wie ein dezentes Wasserzeichen, damit die großen
+     Eck-Indizes optisch dominant bleiben. */
+  opacity: .45;
+  z-index: 1;
 }
 
 @media (max-width: 520px) {
