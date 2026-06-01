@@ -201,8 +201,9 @@
    * rauszulaufen. Untergrenzen halten die Indizes lesbar.
    */
   function fanSteps(pile, h, availH) {
-    const upBase = Math.round(h * 0.30);
-    const downBase = Math.round(h * 0.16);
+    // Etwas engere Grund-Stapelung als zuvor.
+    const upBase = Math.round(h * 0.28);
+    const downBase = Math.round(h * 0.14);
     const N = pile.length;
     if (N <= 1) return { up: upBase, down: downBase };
     let sum = 0;
@@ -211,10 +212,12 @@
     if (!isFinite(availH) || natural <= availH || sum <= 0) {
       return { up: upBase, down: downBase };
     }
+    // Lange Spalten enger stauchen, damit sie nicht unten anstoßen.
+    // Untergrenzen liegen bewusst UNTER dem Basiswert (sonst keine
+    // Stauchung) und halten den Index-Streifen gerade noch lesbar.
     const scale = (availH - h) / sum;
-    // Untergrenzen: offene Karte zeigt weiterhin den Index-Streifen.
-    const up = Math.max(Math.round(h * 0.34), Math.floor(upBase * scale));
-    const down = Math.max(Math.round(h * 0.09), Math.floor(downBase * scale));
+    const up = Math.max(Math.round(h * 0.21), Math.floor(upBase * scale));
+    const down = Math.max(Math.round(h * 0.08), Math.floor(downBase * scale));
     return { up, down };
   }
 

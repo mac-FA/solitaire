@@ -10,17 +10,19 @@
   --ink-muted: #8c9690;
   --card-bg: #f7f1e3;
   --card-bg-2: #ece4cf;
-  --card-border: #1a1a1a;
-  --card-shadow: 0 6px 14px rgba(0,0,0,.35), 0 2px 4px rgba(0,0,0,.25);
-  --card-shadow-drag: 0 18px 36px rgba(0,0,0,.45), 0 6px 14px rgba(0,0,0,.35);
+  --card-border: #111111;
+  /* Rand skaliert mit der Kartengröße — breiter = mehr Kontrast/Abgrenzung. */
+  --card-line: max(2px, calc(var(--card-w) * 0.028));
+  --card-shadow: 0 9px 20px rgba(0,0,0,.45), 0 3px 6px rgba(0,0,0,.35);
+  --card-shadow-drag: 0 20px 40px rgba(0,0,0,.5), 0 7px 16px rgba(0,0,0,.4);
   --red: #e8222a;       /* knallig, hoher Kontrast gegen Schwarz auch bei Rot-Grün-Schwäche */
   --black: #1a1a1a;
   /* Groß und gut lesbar — wie bei Senioren-Tastentelefonen.
      Die Eck-Indizes sind das dominante Element; der Mittel-Pip dient
      nur noch als dezentes Wasserzeichen. */
-  --rank-size: calc(var(--card-w) * 0.46);
-  --suit-size: calc(var(--card-w) * 0.50);
-  --pip-size:  calc(var(--card-w) * 0.34);
+  --rank-size: calc(var(--card-w) * 0.42);
+  --suit-size: calc(var(--card-w) * 0.46);
+  --pip-size:  calc(var(--card-w) * 0.32);
   --corner-pad: calc(var(--card-w) * 0.05);
   --accent: #d6a85a;
   --accent-2: #b88a3b;
@@ -321,7 +323,7 @@ button.primary:active, button.ghost:active { transform: translateY(1px); }
   width: var(--card-w);
   height: var(--card-h);
   background: linear-gradient(180deg, var(--card-bg), var(--card-bg-2));
-  border: 1px solid var(--card-border);
+  border: var(--card-line) solid var(--card-border);
   border-radius: var(--radius);
   box-shadow: var(--card-shadow);
   color: var(--black);
@@ -370,6 +372,7 @@ button.primary:active, button.ghost:active { transform: translateY(1px); }
   position: absolute;
   top: 0; left: 0;
   font-weight: 700;
+  letter-spacing: -0.08em; /* rückt die „10" enger zusammen */
 }
 .card .corner .s {
   position: absolute;
@@ -383,7 +386,7 @@ button.primary:active, button.ghost:active { transform: translateY(1px); }
    sichtbar bleiben. Offset reicht auch für die zweistellige „10". */
 .card.covered .corner .s {
   top: 0;
-  left: calc(var(--rank-size) * 1.25);
+  left: calc(var(--rank-size) * 1.15);
 }
 .card.no-anim .corner .s { transition: none !important; }
 .card .pip {
