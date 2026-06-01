@@ -139,30 +139,90 @@
     return { w, h, gap, fanDown: Math.round(h * 0.28), fanDownTight: Math.round(h * 0.18), fanUp: Math.round(h * 0.18) };
   }
 
+  const CARD_RATIO = 110 / 78; // h/w
+
   /**
-   * Berechnet die optimale Kartengröße für die aktuelle Boardbreite und
-   * setzt --card-w / --card-h direkt auf dem Board.
+   * Berechnet die optimale Kartengröße für die aktuelle Board-Größe und
+   * setzt --card-w / --card-h direkt auf dem Board. Es wird das Minimum
+   * aus Breiten- und (optionaler) Höhen-Beschränkung gewählt — so passt
+   * der Anfangsdeal auch auf niedrigen Laptop-Screens, ohne zu scrollen.
+   *
    *  mode:
    *    'tableau': columns Karten + (columns-1) Lücken nebeneinander
    *    'pyramid': 7-Karten-Basis mit 0.55*w Step (Gesamtbreite 4.3*w)
-   *  opts.minW, opts.maxW erlauben pro Variante Cap-Tuning.
+   *  opts.minW, opts.maxW  — Breiten-Caps.
+   *  opts.vCap             — Anzahl voll gefächerter Karten, die in der
+   *                          Höhe Platz finden sollen (aktiviert Höhen-Cap).
+   *  opts.vTopRows         — volle Kartenhöhen oberhalb des Tableaus.
+   *  opts.vReserveRows     — volle Kartenhöhen, die unten frei bleiben (z. B. Stock).
+   *  opts.vFanRatio        — Fächer-Schritt relativ zur Kartenhöhe (Default 0.30).
    */
   function fitCardSize(boardEl, mode, columns, opts = {}) {
     const boardW = boardEl.clientWidth;
+    const boardH = boardEl.clientHeight;
     if (!boardW) return;
     const baseGap = parseFloat(getComputedStyle(boardEl).getPropertyValue('--gap')) || 14;
-    let w;
+
+    // --- Breiten-Beschränkung ---
+    let wWidth;
     if (mode === 'pyramid') {
-      w = Math.floor((boardW - 2 * baseGap) / 4.3);
+      wWidth = Math.floor((boardW - 2 * baseGap) / 4.3);
     } else {
-      w = Math.floor((boardW - 2 * baseGap - (columns - 1) * baseGap) / columns);
+      wWidth = Math.floor((boardW - 2 * baseGap - (columns - 1) * baseGap) / columns);
     }
+
+    // --- Höhen-Beschränkung (optional) ---
+    let wHeight = Infinity;
+    if (opts.vCap && boardH) {
+      const fan = opts.vFanRatio || 0.30;
+      const topRows = opts.vTopRows || 0;
+      const reserveRows = opts.vReserveRows || 0;
+      // Vertikales Budget (px), das nicht von Kartenhöhe abhängt:
+      const constV = baseGap * (2 + topRows + reserveRows) + (topRows > 0 ? 14 : 0);
+      // Gesamthöhe = constV + h * heightFactor
+      const heightFactor = topRows + reserveRows + (1 + fan * (opts.vCap - 1));
+      const hMax = (boardH - constV) / heightFactor;
+      wHeight = Math.floor(hMax / CARD_RATIO);
+    }
+
     const minW = opts.minW || 48;
     const maxW = opts.maxW || 150;
+    let w = Math.min(wWidth, wHeight);
     w = Math.max(minW, Math.min(maxW, w));
-    const h = Math.round(w * 110 / 78);
+    const h = Math.round(w * CARD_RATIO);
     boardEl.style.setProperty('--card-w', w + 'px');
     boardEl.style.setProperty('--card-h', h + 'px');
+  }
+
+  /**
+   * Adaptive Fächer-Stauchung: gibt die Schritt-Höhen (offen / verdeckt)
+   * für eine Tableau-Spalte zurück, so dass sie möglichst in `availH`
+   * passt. Lange Spalten überlappen automatisch enger, statt unten
+   * rauszulaufen. Untergrenzen halten die Indizes lesbar.
+   */
+  function fanSteps(pile, h, availH) {
+    const upBase = Math.round(h * 0.30);
+    const downBase = Math.round(h * 0.16);
+    const N = pile.length;
+    if (N <= 1) return { up: upBase, down: downBase };
+    let sum = 0;
+    for (let i = 0; i < N - 1; i++) sum += pile[i].faceUp ? upBase : downBase;
+    const natural = h + sum;
+    if (!isFinite(availH) || natural <= availH || sum <= 0) {
+      return { up: upBase, down: downBase };
+    }
+    const scale = (availH - h) / sum;
+    // Untergrenzen: offene Karte zeigt weiterhin den Index-Streifen.
+    const up = Math.max(Math.round(h * 0.34), Math.floor(upBase * scale));
+    const down = Math.max(Math.round(h * 0.09), Math.floor(downBase * scale));
+    return { up, down };
+  }
+
+  /** Linker Start-X, der eine Reihe aus `columns` Karten horizontal zentriert. */
+  function centerStart(boardEl, columns) {
+    const m = metrics(boardEl);
+    const total = columns * m.w + (columns - 1) * m.gap;
+    return Math.max(m.gap, Math.round((boardEl.clientWidth - total) / 2));
   }
 
   // ---- Drag / Pointer-Engine -------------------------------------------
@@ -369,7 +429,7 @@
     rankSym, isRed, color,
     makeDeck, makeSpiderDeck, shuffle,
     renderCardEl, drawFace, setFaceUp, placeCard,
-    metrics, fitCardSize, attachPointer, makeSlot,
+    metrics, fitCardSize, fanSteps, centerStart, attachPointer, makeSlot,
     toast, celebrateWin, hideWin,
     makeTimer, formatTime, makeUndoStack
   };

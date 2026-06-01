@@ -123,11 +123,12 @@
     }
 
     layout(animate = true) {
-      // 10 Tableau-Spalten — engste Variante, Cap etwas niedriger
-      Cards.fitCardSize(this.board, 'tableau', 10, { maxW: 130 });
+      this.board.style.minHeight = '';
+      // 10 Tableau-Spalten; Stock-Reihe wird unten reserviert.
+      Cards.fitCardSize(this.board, 'tableau', 10, { maxW: 130, vCap: 10, vReserveRows: 1 });
       const m = Cards.metrics(this.board);
       const top1 = m.gap;
-      const left0 = m.gap;
+      const left0 = Cards.centerStart(this.board, 10);
 
       // 10 Tableaus oben
       for (let i = 0; i < 10; i++) {
@@ -135,19 +136,16 @@
         s.style.left = (left0 + i * (m.w + m.gap)) + 'px';
         s.style.top = top1 + 'px';
       }
-      // Stock + Done rechts/unten — wir setzen sie unten rechts in der Bar
-      const boardW = this.board.clientWidth;
-      const stockY = top1; // gleiche Reihe — rechts vom letzten Tableau? Wir setzen sie unter den Stock-Bereich
-      // Lege Stock unten in der Bar darunter:
-      // Stock-Stapel-Platz: bottom right corner. Done-Slot daneben.
-      // Wir nutzen die rechte Hälfte der Spielfläche. Einfach: setze Stock-Slot ins Eck rechts oben über dem ersten Tableau? Nein, lieber separat:
-      // Wir verschieben Stock unten links, Done unten rechts.
-      // Spielhöhe wird unten berechnet.
 
-      // Cards in Tableaus
+      // Verfügbare Höhe fürs Tableau (Stock-Reihe unten reserviert)
+      const availH = this.board.clientHeight - top1 - (m.h + 2 * m.gap);
+
+      // Cards in Tableaus — adaptiver Fächer
+      let maxBottom = top1 + m.h;
       for (let col = 0; col < 10; col++) {
         const pile = this.tableau[col];
         const x = left0 + col * (m.w + m.gap);
+        const steps = Cards.fanSteps(pile, m.h, availH);
         let y = top1;
         for (let i = 0; i < pile.length; i++) {
           const c = pile[i];
@@ -155,17 +153,11 @@
           if (c.faceUp && c.el.classList.contains('face-down')) Cards.setFaceUp(c, true);
           if (!c.faceUp && !c.el.classList.contains('face-down')) Cards.setFaceUp(c, false);
           c.el.classList.toggle('covered', c.faceUp && i < pile.length - 1);
-          y += c.faceUp ? m.fanDown : m.fanDownTight;
+          y += c.faceUp ? steps.up : steps.down;
         }
-      }
-
-      // Maximal-Y für Spalten ermitteln
-      let maxBottom = top1 + m.h;
-      for (let col = 0; col < 10; col++) {
-        const p = this.tableau[col];
-        let y = top1;
-        for (let i = 0; i < p.length; i++) y += p[i].faceUp ? m.fanDown : m.fanDownTight;
-        if (y > maxBottom) maxBottom = y + m.h;
+        const last = pile.length ? (pile[pile.length-1].faceUp ? steps.up : steps.down) : 0;
+        const bottom = y - last + m.h;
+        if (bottom > maxBottom) maxBottom = bottom;
       }
 
       // Stock unten links

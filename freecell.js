@@ -110,10 +110,11 @@
     }
 
     layout(animate = true) {
-      // 8 Tableau-Spalten
-      Cards.fitCardSize(this.board, 'tableau', 8, { maxW: 150 });
+      this.board.style.minHeight = '';
+      // 8 Tableau-Spalten; eine Top-Reihe (Zellen + Fundamente) darüber.
+      Cards.fitCardSize(this.board, 'tableau', 8, { maxW: 150, vCap: 9, vTopRows: 1 });
       const m = Cards.metrics(this.board);
-      const left0 = m.gap;
+      const left0 = Cards.centerStart(this.board, 8);
       const top1 = m.gap;
       // 4 Freizellen links, 4 Fundamente rechts, alle in einer Reihe (8 Slots)
       for (let i = 0; i < 4; i++) {
@@ -146,28 +147,26 @@
           Cards.placeCard(pile[j], x, top1, 30 + j, animate);
         }
       }
-      // Tableaus
+      // Tableaus — adaptiver Fächer (alle Karten offen)
+      const availH = this.board.clientHeight - top2 - m.gap;
+      let maxBottom = top2 + m.h;
       for (let col = 0; col < 8; col++) {
         const pile = this.tableau[col];
         const x = left0 + col * (m.w + m.gap);
+        const steps = Cards.fanSteps(pile, m.h, availH);
         let y = top2;
         for (let i = 0; i < pile.length; i++) {
           Cards.placeCard(pile[i], x, y, i + 1, animate);
           pile[i].el.classList.toggle('covered', i < pile.length - 1);
-          y += m.fanDown;
+          y += steps.up;
         }
+        const bottom = top2 + (pile.length > 0 ? (pile.length - 1) * steps.up : 0) + m.h;
+        if (bottom > maxBottom) maxBottom = bottom;
       }
       // Freizellen + Fundamente: nie covered
       for (const c of this.cells) if (c) c.el.classList.remove('covered');
       for (const f of this.foundation) for (const c of f) c.el.classList.remove('covered');
 
-      // Höhe
-      let maxBottom = top2 + m.h;
-      for (let col = 0; col < 8; col++) {
-        const len = this.tableau[col].length;
-        const bottom = top2 + (len > 0 ? (len - 1) * m.fanDown : 0) + m.h;
-        if (bottom > maxBottom) maxBottom = bottom;
-      }
       this.board.style.minHeight = (maxBottom + m.gap) + 'px';
     }
 

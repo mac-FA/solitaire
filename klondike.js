@@ -122,11 +122,15 @@
     }
 
     layout(animate = true) {
-      // 7 Tableau-Spalten = limitierender Faktor
-      Cards.fitCardSize(this.board, 'tableau', 7, { maxW: 160 });
+      // alte Layout-Höhe verwerfen, damit clientHeight die echte
+      // sichtbare Höhe liefert (nicht die aufgeblähte minHeight).
+      this.board.style.minHeight = '';
+      // 7 Tableau-Spalten; eine Top-Reihe darüber. Höhen-Cap verhindert
+      // zu hohe Karten auf niedrigen Laptop-Screens.
+      Cards.fitCardSize(this.board, 'tableau', 7, { maxW: 160, vCap: 9, vTopRows: 1 });
       const m = Cards.metrics(this.board);
       const top1 = m.gap;
-      const left0 = m.gap;
+      const left0 = Cards.centerStart(this.board, 7);
       // Top row: stock, waste, gap, foundation x4
       const stockX = left0;
       const wasteX = left0 + (m.w + m.gap);
@@ -175,10 +179,13 @@
           if (!pile[i].faceUp) Cards.setFaceUp(pile[i], true);
         }
       }
-      // Tableau
+      // Tableau — mit adaptiver Fächer-Stauchung pro Spalte
+      const availH = this.board.clientHeight - top2 - m.gap;
+      let maxBottom = top2 + m.h;
       for (let col = 0; col < 7; col++) {
         const pile = this.tableau[col];
         const x = left0 + col * (m.w + m.gap);
+        const steps = Cards.fanSteps(pile, m.h, availH);
         let y = top2;
         for (let i = 0; i < pile.length; i++) {
           const c = pile[i];
@@ -188,25 +195,17 @@
           if (!c.faceUp && !c.el.classList.contains('face-down')) Cards.setFaceUp(c, false);
           // Symbol-Slide: alle Karten außer der obersten in der Spalte
           c.el.classList.toggle('covered', c.faceUp && i < pile.length - 1);
-          y += c.faceUp ? m.fanDown : m.fanDownTight;
+          y += c.faceUp ? steps.up : steps.down;
         }
+        const bottom = y - (pile.length ? (pile[pile.length-1].faceUp ? steps.up : steps.down) : 0) + m.h;
+        if (bottom > maxBottom) maxBottom = bottom;
       }
       // Stock/Waste/Foundation top-Karte = nie covered
       for (const c of [...this.stock, ...this.waste, ...this.foundation.flat()]) {
         c.el.classList.remove('covered');
       }
 
-      // Board-Größe anpassen
-      // Höhe = top2 + max-Pile-Höhe
-      let maxBottom = top2 + m.h;
-      for (let col = 0; col < 7; col++) {
-        const p = this.tableau[col];
-        let y = top2;
-        for (let i = 0; i < p.length; i++) {
-          y += p[i].faceUp ? m.fanDown : m.fanDownTight;
-        }
-        if (y > maxBottom) maxBottom = y + m.h;
-      }
+      // Sicherheits-Scroll nur falls eine Spalte trotz Stauchung überläuft
       this.board.style.minHeight = (maxBottom + m.gap) + 'px';
     }
 

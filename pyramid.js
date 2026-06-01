@@ -131,6 +131,9 @@
           const x = baseX + i * colStep + (6 - row) * (colStep / 2);
           const y = top1 + row * rowStep;
           Cards.placeCard(c, x, y, row * 10 + i + 1, animate);
+          // Verdeckte Pyramidenkarte: Symbol neben die Zahl in den oberen
+          // sichtbaren Streifen schieben (sonst läge es unter der Folgereihe).
+          c.el.classList.toggle('covered', !this.isExposed(row, i));
         }
       }
 
